@@ -1,0 +1,45 @@
+service: xke-serverless
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  region: eu-west-1
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - xray:PutTraceSegments
+        - xray:PutTelemetryRecords
+      Resource: "*"
+
+plugins:
+  # Run local API gateway
+  - serverless-offline
+
+custom:
+  stage: ${opt:stage, self:provider.stage, env:USER}
+
+functions:
+
+  book-list:
+    handler: app/handlers/BookHandler.list
+    name: xke-serverless-books-list-${self:custom.stage}
+    events:
+      - http:
+          path: /books
+          method: get
+          authorizer:
+            name: oauth-authorizer
+            resultTtlInSeconds: 30
+            identitySource: method.request.header.Authorization
+            type: token
+
+  oauth-authorizer:
+    handler: app/Authorizer.handler
+    name: xke-serverless-oauth-authorizer-${self:custom.stage}
+    memory: 128
+    timeout: 2
+    environment:
+      AUDIENCE: books-api
+      TOKEN_ISSUER: https://xke-serverless.eu.auth0.com/
+      JWKS_URI: https://xke-serverless.eu.auth0.com/.well-known/jwks.json
