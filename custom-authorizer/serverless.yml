@@ -1,4 +1,4 @@
-service: xke-serverless
+service: xke-serverless-authorizer
 
 provider:
   name: aws

@@ -1,0 +1,17 @@
+{
+  "name": "xke-serverless-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "serverless": "^1.25.0",
+    "serverless-offline": "^3.16.0"
+  },
+  "dependencies": {
+  }
+}
