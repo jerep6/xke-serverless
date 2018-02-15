@@ -8,7 +8,7 @@ import {routes as booksRoutes} from './controllers/BookController'
 
 const app = new Koa();
 app.use(errorsMiddleware);
-app.use(cors);
+app.use(cors());
 app.use(bodyParser());
 
 const rootRouter = new Router({"prefix": '/:stage?'});

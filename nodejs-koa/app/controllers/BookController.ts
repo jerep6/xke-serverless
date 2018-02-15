@@ -13,7 +13,7 @@ export function routes(): Router {
 }
 
 async function list(ctx: Context, next: LambdaApplicationNext) {
-    const books = repo.list();
+    const books = await repo.list();
     ctx.body = books;
 };
 
