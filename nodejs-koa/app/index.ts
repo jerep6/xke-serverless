@@ -11,12 +11,12 @@ app.use(errorsMiddleware);
 app.use(cors);
 app.use(bodyParser());
 
-// const rootRouter = new Router({"prefix": '/:stage?'});
-// rootRouter.use('/', booksRoutes().routes());
+const rootRouter = new Router({"prefix": '/:stage?'});
+rootRouter.use('/books', booksRoutes().routes());
 
 
-app.use(booksRoutes().routes());
-app.use(booksRoutes().allowedMethods());
+app.use(rootRouter.routes());
+app.use(rootRouter.allowedMethods());
 
 export default app;
 

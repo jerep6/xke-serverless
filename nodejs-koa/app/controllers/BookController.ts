@@ -6,8 +6,8 @@ import * as repo from '../repositories/BookRepository'
 export function routes(): Router {
     const router = new Router();
     router
-        .get('/books', list)
-        .get('/books/:bookId', get);
+        .get('/', list)
+        .get('/:bookId', get);
 
     return router;
 }
