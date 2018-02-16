@@ -10,16 +10,16 @@ router.get('/:bookId', get);
 
 export default router;
 
-function list(req: express.Request, res: express.Response) {
+async function list(req: express.Request, res: express.Response) {
   logger.debug('list books')
-  const books = repo.list();
+  const books = await repo.list();
   res.send(books);
 };
 
-function get(req: express.Request, res: express.Response) {
+async function get(req: express.Request, res: express.Response) {
   const { bookId } = req.params;
   logger.debug(`get book ${bookId}`)
-  const book = repo.get(bookId);
+  const book = await repo.get(bookId);
 
   res.send(book)
 };
