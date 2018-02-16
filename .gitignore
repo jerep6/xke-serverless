@@ -4,6 +4,7 @@
 logs
 *.log
 npm-debug.log*
+.history
 
 # Runtime data
 pids
@@ -11,6 +12,7 @@ pids
 *.seed
 *.pid.lock
 dist
+.build
 
 # Dependency directories
 node_modules

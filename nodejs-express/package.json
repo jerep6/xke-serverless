@@ -1,0 +1,29 @@
+{
+  "name": "xke-serverless-api",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "dependencies": {
+    "@types/express": "4.11.1",
+    "@types/morgan": "^1.7.35",
+    "body-parser": "1.18.2",
+    "express": "4.16.2",
+    "morgan": "^1.9.0",
+    "serverless-http": "1.5.3",
+    "winston": "2.4.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "0.0.31",
+    "@types/winston": "2.3.7",
+    "nodemon": "1.14.12",
+    "serverless": "1.25.0",
+    "serverless-offline": "3.16.0",
+    "serverless-plugin-typescript": "1.1.5",
+    "ts-node": "4.1.0",
+    "tsc": "1.20150623.0",
+    "typescript": "2.7.1"
+  },
+  "scripts": {
+    "start": "nodemon --exec ts-node app/server.ts"
+  }
+}
