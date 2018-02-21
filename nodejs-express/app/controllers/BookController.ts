@@ -2,6 +2,7 @@ import * as express from 'express';
 import {Request, Response, NextFunction} from 'express';
 
 import * as repo from '../repositories/BookRepository'
+import * as repoDynamo from '../repositories/BookRepositoryDynamo'
 import logger from '../utils/logger.utils';
 import { Book } from '../../typings/Book';
 
@@ -14,7 +15,7 @@ async function list(req: Request, res: Response, next: NextFunction) {
   logger.debug('list books');
 
   try {
-    const books: Book[] = await repo.list();
+    const books: Book[] = await repoDynamo.list();
     res
       .json(books);
   }
@@ -28,7 +29,7 @@ async function get(req: Request, res: Response, next: NextFunction) {
   logger.debug(`get book ${bookId}`);
 
   try {
-    const book: Book = await repo.get(bookId);
+    const book: Book = await repoDynamo.get(bookId);
     res
       .status(book ? 200: 404)
       .json(book)

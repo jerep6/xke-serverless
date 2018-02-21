@@ -6,6 +6,13 @@ provider:
   region: eu-west-1
   endpointType: regional
 
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+      Resource:
+        - "Fn::Sub": "arn:aws:dynamodb:${self:custom.region}:*:table/${self:custom.stage}-book*"
+
 plugins:
   - serverless-plugin-typescript
   - serverless-offline # Run local API gateway
@@ -13,6 +20,7 @@ plugins:
 
 custom:
   stage: ${opt:stage, self:provider.stage, env:USER}
+  region: ${opt:region, self:provider.region}
   # load key corresponding to the stage in the file or if key doesn't exist load "jpidev"
   perEnv: ${file(serverless-config.yml):${self:custom.stage}, file(serverless-config.yml):jpidev}
 

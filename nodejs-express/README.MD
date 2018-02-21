@@ -185,8 +185,29 @@ resources:
 npm install -S aws-sdk
 ```
 
+**Fichier utils/awssdk.ts**
+```typescript
+import {APIVersions, ConfigurationOptions} from "aws-sdk/lib/config";
+import * as AWS from "aws-sdk";
 
-## Ajouter la variable d'environnement
+
+const conf: ConfigurationOptions & APIVersions = {
+  region: "eu-west-1",
+  apiVersions: {
+    apigateway: '2015-07-09',
+    cloudwatch: '2010-08-01',
+    dynamodb: '2012-08-10',
+    lambda: '2015-03-31',
+    s3: '2006-03-01'
+  }
+};
+
+AWS.config.update(conf);
+
+export default AWS;
+```
+
+### Ajouter la variable d'environnement
 L'application est déjà paramétrée pour utiliser la variable d'environnement TABLE_BOOK (config.js)
 
 ```
@@ -198,6 +219,71 @@ functions:
       TABLE_BOOK: ${self:custom.stage}-book
 ```
 
-## Coder le répository
+
+### Coder le répository
+```typescript
+import AWS from '../utils/awssdk'
+import config from '../utils/config'
+import logger, { errorToString} from '../utils/logger.utils';
+import { Book } from '../../typings/Book';
+import { DocumentClient } from 'aws-sdk/lib/dynamodb/document_client';
+
+const documentClient = new AWS.DynamoDB.DocumentClient();
 
 
+export async function get(bookId: string): Promise<Book> {
+  try {
+    const result: DocumentClient.GetItemOutput = await documentClient.get({
+      TableName: config.dynamodb.book,
+      Key: {id: bookId}
+    }).promise();
+
+    return <Book> result.Item;
+
+  } catch(error) {
+    logger.error(`BookRepository.get - Error reading book ${bookId}`, {error: errorToString(error)});
+    throw error;
+  }
+}
+
+export async function list(): Promise<Book[]> {
+  try {
+    const result = await documentClient.scan({
+      TableName: config.dynamodb.book
+    }).promise();
+
+    return <Book[]> result.Items;
+  } catch(error) {
+    logger.error(`BookRepository.get - Error listing books`, {error: errorToString(error)});
+    throw error;
+  }
+}
+
+```
+
+### Brancher le répository dans le controller
+
+
+### Ajouter les droits à la lambda
+
+**Fichier serverless.yml**
+```
+provider:
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+      Resource:
+        - "Fn::Sub": "arn:aws:dynamodb:${self:custom.region}:*:table/${self:custom.stage}-book*"
+```
+
+### Déployer
+
+```
+serverless offline
+curl http://localhost:3000/books
+
+serverless deploy --stage {TRIGRAMME}dev
+
+curl http://ENDPOINT_API_GATEWAY/{TRIGRAMME}dev/books
+```
