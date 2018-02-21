@@ -1,4 +1,5 @@
 import * as express from 'express';
+import {Request, Response, NextFunction} from 'express';
 
 import * as repo from '../repositories/BookRepository'
 import logger from '../utils/logger.utils';
@@ -6,19 +7,32 @@ import logger from '../utils/logger.utils';
 const router = express.Router();
 router.get('/', list);
 router.get('/:bookId', get);
-
 export default router;
 
-async function list(req: express.Request, res: express.Response) {
-  logger.debug('list books')
-  const books = await repo.list();
-  res.send(books);
+async function list(req: Request, res: Response, next: NextFunction) {
+  logger.debug('list books');
+
+  try {
+    const books = await repo.list();
+    res
+      .json(books);
+  }
+  catch (error) {
+    next(error);
+  }
 };
 
-async function get(req: express.Request, res: express.Response) {
+async function get(req: Request, res: Response, next: NextFunction) {
   const { bookId } = req.params;
-  logger.debug(`get book ${bookId}`)
-  const book = await repo.get(bookId);
+  logger.debug(`get book ${bookId}`);
 
-  res.send(book)
+  try {
+    const book = await repo.get(bookId);
+    res
+      .status(book ? 200: 404)
+      .json(book)
+  }
+  catch (error) {
+    next(error);
+  }
 };
