@@ -62,7 +62,7 @@ functions:
   books:
     handler: app/handlers/BookHandler.handler
     name: xke-serverless-books-${self:custom.stage}
-    memory: 128
+    memorySize: 128
     timeout: 10
     events:
       # TODO
@@ -80,7 +80,7 @@ Le routage s'effectue au sein de la lambda via Express, il est donc pas obligato
 Il existe plusieurs écoles avec chacune ses avantages et inconvénients. À vous de choisir la vôtre :
  - déployer une lambda par endpoint HTTP
  - déployer une lambda par ressource REST
- - déployer une lambda pour toute l'applicaiton
+ - déployer une lambda pour toute l'application
  
  
 ```
@@ -109,7 +109,7 @@ ex: *--stage jpi*
 
 
 ```
-serverless deploy --stage {TRIGRAMME}dev
+serverless deploy --stage dev
 
 curl http://ENDPOINT_API_GATEWAY/{TRIGRAMME}dev/books
 ```
@@ -129,10 +129,10 @@ Voyons comment lister les variables par environnement dans un fichier de configu
 
 **Fichier serverless-config.yml**
 ```
-jpi_dev:
+jpidev:
   memory: 128
 
-jpi_prod:
+jpiprod:
   memory: 512
 ```
 
