@@ -1,0 +1,5 @@
+jpidev:
+  memory: 128
+
+jpiprod:
+  memory: 512
