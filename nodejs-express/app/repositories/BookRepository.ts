@@ -1,66 +1,68 @@
+import { Book } from '../../typings/Book';
+
 const books = [
   {
-    id: 1,
+    id: "aaa",
     title: "The Shining",
-    author_id: 1,
+    author_id: "1",
     year: 1977,
     likes: 12000
   },
   {
-    id: 2,
+    id: "bbb",
     title: "Black House",
-    author_id: 1,
+    author_id: "1",
     year: 2001,
     likes: 8700
   },
   {
-    id: 3,
+    id: "ccc",
     title: "Da Vinci Code",
-    author_id: 2,
+    author_id: "2",
     year: 2003,
     likes: 130000,
   },
   {
-    id: 4,
+    id: "ddd",
     title: "Angels & Demons",
-    author_id: 2,
+    author_id: "2",
     year: 2000,
     likes: 98000,
   },
   {
-    id: 5,
+    id: "eee",
     title: "Deception Point",
-    author_id: 2,
+    author_id: "2",
     year: 2001,
     likes: 56000,
   },
   {
-    id: 6,
+    id: "fff",
     title: "Les Fourmis",
-    author_id: 3,
+    author_id: "3",
     year: 1991,
     likes: 46800,
   },
   {
-    id: 7,
+    id: "ggg",
     title: "Le Jour des fourmis",
-    author_id: 3,
+    author_id: "3",
     year: 1992,
     likes: 48300,
   },
   {
-    id: 8,
+    id: "hhh",
     title: "La Révolution des fourmis",
-    author_id: 3,
+    author_id: "3",
     year: 1996,
     likes: 53000,
   }
 ];
 
-export async function list () {
+export async function list (): Promise<Book[]> {
   return books;
 };
 
-export async function get(bookId) {
+export async function get(bookId): Promise<Book> {
   return books.filter(elt => elt.id == bookId)[0];
 };

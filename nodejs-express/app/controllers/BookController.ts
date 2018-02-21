@@ -3,6 +3,7 @@ import {Request, Response, NextFunction} from 'express';
 
 import * as repo from '../repositories/BookRepository'
 import logger from '../utils/logger.utils';
+import { Book } from '../../typings/Book';
 
 const router = express.Router();
 router.get('/', list);
@@ -13,7 +14,7 @@ async function list(req: Request, res: Response, next: NextFunction) {
   logger.debug('list books');
 
   try {
-    const books = await repo.list();
+    const books: Book[] = await repo.list();
     res
       .json(books);
   }
@@ -27,7 +28,7 @@ async function get(req: Request, res: Response, next: NextFunction) {
   logger.debug(`get book ${bookId}`);
 
   try {
-    const book = await repo.get(bookId);
+    const book: Book = await repo.get(bookId);
     res
       .status(book ? 200: 404)
       .json(book)
