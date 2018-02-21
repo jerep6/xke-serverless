@@ -144,7 +144,7 @@ custom:
   
 ...
 
-memory: ${self:custom.perEnv.memory}
+memorySize: ${self:custom.perEnv.memory}
 ```
 
 ## Tracing
@@ -154,4 +154,50 @@ memory: ${self:custom.perEnv.memory}
 
 
 # Migration DynamoDB
+
+## Création de la table
 La liste des livres est un mock stocké dans le code. Nous allons utiliser la base de données DynamoDB.
+
+Il est possible d'ajouter des [ressources CloudFormation](https://serverless.com/framework/docs/providers/aws/guide/resources/) dans le fichier serverless.yml
+```
+resources:
+  Resources:
+    BookTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Delete
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: 'id'
+            AttributeType: 'S'
+        KeySchema:
+          - AttributeName: 'id'
+            KeyType: 'HASH'
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:custom.stage}-book
+```
+
+## Utilisation de la table
+### Ajouter le SDK AWS dans le code
+
+```
+npm install -S aws-sdk
+```
+
+
+## Ajouter la variable d'environnement
+L'application est déjà paramétrée pour utiliser la variable d'environnement TABLE_BOOK (config.js)
+
+```
+functions:
+
+  books:
+  
+    environment:
+      TABLE_BOOK: ${self:custom.stage}-book
+```
+
+## Coder le répository
+
+

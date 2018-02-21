@@ -20,9 +20,11 @@ functions:
 
   books:
     handler: app/handlers/BookHandler.handler
-    name: xke-serverless-books-${self:custom.stage}
-    memory: ${self:custom.perEnv.memory}
+    name: ${self:custom.stage}-xke-serverless-books
+    memorySize: ${self:custom.perEnv.memory}
     timeout: 10
+    environment:
+      TABLE_BOOK: ${self:custom.stage}-book
     events:
       - http:
           path: /books
@@ -30,3 +32,21 @@ functions:
       - http:
           path: /books/{any+}
           method: ANY
+
+
+resources:
+  Resources:
+    BookTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Delete
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: 'id'
+            AttributeType: 'S'
+        KeySchema:
+          - AttributeName: 'id'
+            KeyType: 'HASH'
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:custom.stage}-book
