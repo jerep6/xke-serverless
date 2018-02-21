@@ -4,7 +4,7 @@ Votre responsabilité est de le faire fonctionner avec AWS Lambda
 
 
 
-## Express
+## Lancer l'application
 Faire tourner en local l'application
 ```
 npm start
@@ -12,6 +12,14 @@ npm start
 curl http://localhost:3000/books
 ```
 
+Ou via docker
+
+```
+docker build -t xke-serverless .
+docker run -ti --rm -p 3000:3000 xke-serverless
+
+curl http://localhost:3000/books
+```
 
 
 

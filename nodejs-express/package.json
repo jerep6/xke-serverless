@@ -22,10 +22,11 @@
     "serverless-offline": "3.16.0",
     "serverless-plugin-typescript": "1.1.5",
     "ts-node": "4.1.0",
-    "tsc": "1.20150623.0",
-    "typescript": "2.7.1"
+    "typescript": "^2.7.2"
   },
   "scripts": {
-    "start": "nodemon --exec ts-node app/server.ts"
+    "start": "nodemon --exec ts-node app/server.ts",
+    "start:production": "node build/app/server.js",
+    "build": "rm -rf ./build && tsc"
   }
 }
