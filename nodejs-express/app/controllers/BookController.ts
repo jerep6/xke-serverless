@@ -4,7 +4,6 @@ import * as repo from '../repositories/BookRepository'
 import logger from '../utils/logger.utils';
 
 const router = express.Router();
-
 router.get('/', list);
 router.get('/:bookId', get);
 

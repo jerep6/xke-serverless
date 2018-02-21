@@ -1,4 +1,5 @@
 import * as winston from "winston";
+import config from "./config";
 
 const logger = new winston.Logger({
   levels: {
@@ -22,7 +23,7 @@ logger.add(winston.transports.Console, {
   level: 'trace',
   timestamp: () => new Date().toISOString(),
   colorize: true,
-  json: process.env.NODE_ENV !== 'development',
+  json: config.logs.json,
   stringify: obj => JSON.stringify(obj)
 }
 );
