@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="info" packages="com.amazonaws.services.lambda.runtime.log4j2">
+    <Appenders>
+        <Lambda name="LAMBDA">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %X{AWSRequestId} %-5p %c{1}:%L - %m%n" />
+        </Lambda>
+    </Appenders>
+
+    <Loggers>
+        <Root level="info">
+            <AppenderRef ref="LAMBDA"/>
+        </Root>
+
+        <!--<Root level="debug">
+            <AppenderRef ref="LAMBDA"/>
+        </Root>-->
+
+        <Logger name="org.apache.http" additivity="false">
+            <AppenderRef ref="LAMBDA"/>
+        </Logger>
+
+        <Logger name="org.apache.http.headers" additivity="false">
+            <AppenderRef ref="LAMBDA"/>
+        </Logger>
+
+        <Logger name="org.apache.http.wire" additivity="false">
+            <AppenderRef ref="LAMBDA"/>
+        </Logger>
+    </Loggers>
+</Configuration>

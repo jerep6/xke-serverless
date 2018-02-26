@@ -1,14 +1,9 @@
 *.class
-.gradle
-/build/
+target
 /bin/
 /.settings/
 .project
 .classpath
-.idea
-**/build
-**/node_modules
-**.iml
 
 # Package Files
 *.jar
@@ -17,4 +12,3 @@
 
 # Serverless directories
 .serverless
-

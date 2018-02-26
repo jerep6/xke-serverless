@@ -1,0 +1,57 @@
+service: xke-serverless-java
+
+provider:
+  name: aws
+  runtime: java8
+  region: eu-west-1
+  endpointType: REGIONAL
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:*
+      Resource:
+        - "arn:aws:dynamodb:${self:provider.region}:*:table/${self:custom.stage}-book"
+
+plugins:
+
+custom:
+  stage: ${opt:stage, self:provider.stage, env:USER}
+  # load key corresponding to the stage in the file or if key doesn't exist load "lnaldev"
+  perEnv: ${file(serverless-config.yml):${self:custom.stage}, file(serverless-config.yml):lnldev}
+
+package:
+  artifact: target/lambda.proxy-java.jar
+
+functions:
+
+  books:
+    handler: com.serverless.handler.ProxyHandler
+    name: xke-serverless-books-${self:custom.stage}
+    memorySize: ${self:custom.perEnv.memory} # will be inherited by all functions
+    timeout: 30
+    environment:
+      TABLE_BOOK: ${self:custom.stage}-book
+    events:
+      - http:
+          path: /books
+          method: ANY
+      - http:
+          path: /books/{bookId}
+          method: ANY
+
+resources:
+  Resources:
+    BookTable:
+      Type: 'AWS::DynamoDB::Table'
+      DeletionPolicy: Delete
+      Properties:
+        AttributeDefinitions:
+          - AttributeName: 'id'
+            AttributeType: 'S'
+        KeySchema:
+          - AttributeName: 'id'
+            KeyType: 'HASH'
+        ProvisionedThroughput:
+          ReadCapacityUnits: 1
+          WriteCapacityUnits: 1
+        TableName: ${self:custom.stage}-book

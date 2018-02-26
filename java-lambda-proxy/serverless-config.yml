@@ -1,0 +1,5 @@
+lnldev:
+  memory: 256
+
+lnlprod:
+  memory: 512
