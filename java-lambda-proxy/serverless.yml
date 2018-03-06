@@ -27,7 +27,7 @@ functions:
   books:
     handler: com.serverless.handler.ProxyHandler
     name: xke-serverless-books-${self:custom.stage}
-    memorySize: ${self:custom.perEnv.memory} # will be inherited by all functions
+    memorySize: ${self:custom.perEnv.memory}
     timeout: 30
     environment:
       TABLE_BOOK: ${self:custom.stage}-book
