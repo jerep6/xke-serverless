@@ -85,7 +85,7 @@ functions:
   books:
     handler: com.serverless.handler.ProxyHandler
     name: xke-serverless-books-${self:custom.stage}
-    memorySize: 128
+    memorySize: 256
     timeout: 10
     events:
       # TODO
@@ -158,7 +158,7 @@ Voyons comment lister les variables par environnement dans un fichier de configu
 **Fichier serverless-config.yml**
 ```
 jpidev:
-  memory: 128
+  memory: 256
 
 jpiprod:
   memory: 512
@@ -344,7 +344,9 @@ public class BookDao {
     }
 
     public Optional<Book> findBookById(int id) {
+        
         return Optional.ofNullable(MAPPER.load(Book.class, id, bookConfig));
+    
     }
 
     public List<Book> findBooks() {

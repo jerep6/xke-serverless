@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiPredicate;
 
-import static com.serverless.gateway.Resource.HttpMethod.GET;
 import static java.util.Collections.singletonMap;
 import static java.util.stream.Collectors.toList;
 
@@ -26,8 +25,7 @@ public class ProxyHandler implements RequestHandler<Map<String, Object>, ApiGate
     private static List<Resource> resources = new ArrayList<>();
 
     static {
-        resources.add(new Resource(GET, "/books", BooksGetHandler.class));
-        resources.add(new Resource(GET, "/books/{bookId}", BookGetHandler.class));
+        // TODO: register proxy
     }
 
     @Override

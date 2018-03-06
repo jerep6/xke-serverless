@@ -1,27 +1,18 @@
 package com.serverless.model;
 
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
-import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-@DynamoDBTable(tableName = "book-lnal")
 public class Book {
 
-    @DynamoDBHashKey
     private String id;
 
-    @DynamoDBAttribute
     private String title;
 
-    @DynamoDBAttribute
     @JsonProperty("author_id")
     private int authorId;
 
-    @DynamoDBAttribute
     private int year;
 
-    @DynamoDBAttribute
     private int likes;
 
     public Book() {

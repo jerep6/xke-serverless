@@ -10,7 +10,9 @@ import java.util.List;
 import static io.restassured.RestAssured.given;
 import static org.assertj.core.api.Assertions.assertThat;
 
+//at now test doesn't work for dynamo
 public class BookHandlerIT extends BaseTest {
+
 
     private BookRepository bookRepository = BookRepository.instance();
 
