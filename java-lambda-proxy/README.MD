@@ -85,7 +85,7 @@ functions:
   books:
     handler: com.serverless.handler.ProxyHandler
     name: xke-serverless-books-${self:custom.stage}
-    memorySize: 128
+    memorySize: 256
     timeout: 10
     events:
       # TODO
