@@ -79,6 +79,9 @@ plugins:
   
 custom:
   stage: ${opt:stage, self:provider.stage, env:USER}
+ 
+package:
+  artifact: target/lambda.proxy-java.jar
 
 functions:
 
