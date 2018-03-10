@@ -1,8 +1,9 @@
-import {APIVersions, ConfigurationOptions} from "aws-sdk/lib/config";
+import { APIVersions, ConfigurationOptions } from 'aws-sdk/lib/config';
+import { ServiceConfigurationOptions } from 'aws-sdk/lib/service';
 import * as AWS from "aws-sdk";
 
 
-const conf: ConfigurationOptions & APIVersions = {
+const awsconf: ConfigurationOptions & APIVersions = {
   region: "eu-west-1",
   apiVersions: {
     apigateway: '2015-07-09',
@@ -12,7 +13,26 @@ const conf: ConfigurationOptions & APIVersions = {
     s3: '2006-03-01'
   }
 };
+AWS.config.update(awsconf);
 
-AWS.config.update(conf);
 
+let DocumentClient, DynamoDB;
+if (process.env.NODE_ENV === 'test') {
+  const configDynamo = {
+    region: "eu-west-1",
+    endpoint: "http://localhost:8888",
+    accessKeyId: 'dummy',
+    secretAccessKey: 'dummy'
+  };
+
+  DynamoDB = new AWS.DynamoDB(configDynamo);
+  DocumentClient = new AWS.DynamoDB.DocumentClient(configDynamo);
+}
+else {
+  DynamoDB = new AWS.DynamoDB();
+  DocumentClient = new AWS.DynamoDB.DocumentClient();
+}
+
+export { DynamoDB };
+export { DocumentClient };
 export default AWS;
