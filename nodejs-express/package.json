@@ -26,6 +26,7 @@
     "@types/jest": "^22.2.0",
     "@types/winston": "2.3.7",
     "dynamodb-localhost": "0.0.5",
+    "glob": "^7.1.2",
     "jest": "^22.4.2",
     "nodemon": "1.14.12",
     "serverless": "1.25.0",
