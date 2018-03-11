@@ -1,6 +1,19 @@
 import { APIVersions, ConfigurationOptions } from 'aws-sdk/lib/config';
-import * as AWS from "aws-sdk";
 
+import config from './config';
+import logger from './logger.utils';
+
+
+let AWS;
+// If xray is enabled capture call from aws-sdk
+if (config.xray) {
+  const AWSXRay = require('aws-xray-sdk');
+  AWSXRay.setLogger(logger);
+  AWS = AWSXRay.captureAWS(require('aws-sdk'));
+  AWSXRay.captureHTTPsGlobal(require('http'));
+} else {
+  AWS = require('aws-sdk');
+}
 
 const awsconf: ConfigurationOptions & APIVersions = {
   region: "eu-west-1",

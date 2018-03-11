@@ -5,6 +5,7 @@ provider:
   runtime: nodejs6.10
   region: eu-west-1
   endpointType: regional
+  tracing: true
 
   iamRoleStatements:
     - Effect: Allow
@@ -12,10 +13,17 @@ provider:
         - dynamodb:*
       Resource:
         - "Fn::Sub": "arn:aws:dynamodb:${self:custom.region}:*:table/${self:custom.stage}-book*"
+    - Effect: Allow
+      Sid: tracing
+      Action:
+        - xray:PutTraceSegments
+        - xray:PutTelemetryRecords
+      Resource: "*"
 
 plugins:
   - serverless-plugin-typescript
   - serverless-offline # Run local API gateway
+  - serverless-plugin-tracing
 
 
 custom:
@@ -33,6 +41,7 @@ functions:
     timeout: 10
     environment:
       TABLE_BOOK: ${self:custom.stage}-book
+      XRAY: true
     events:
       - http:
           path: /books

@@ -5,5 +5,6 @@ export default {
   },
   dynamodb: {
     book: process.env.TABLE_BOOK || 'books'
-  }
+  },
+  xray: process.env.XRAY === 'true'
 }

@@ -6,7 +6,7 @@ Votre responsabilité est de le faire fonctionner avec AWS Lambda
 
 ## Lancer l'application
 Faire tourner en local l'application
-```
+```bash
 npm install
 npm start
 
@@ -15,7 +15,7 @@ curl http://localhost:3000/books
 
 Ou via docker
 
-```
+```bash
 docker build -t xke-serverless .
 docker run -ti --rm -p 3000:3000 xke-serverless
 
@@ -25,6 +25,9 @@ curl http://localhost:3000/books
 
 
 # Migration AWS Lambda
+```bash
+npm i -g serverless
+```
 
 ## Transformer les requêtes API Gateway en HTTP
 L'intégration API Gateway et Lambda sera configurée en *LAMBDA_PROXY*. De ce fait le handler de la lambda recevra [une requête
@@ -38,7 +41,7 @@ npm install -S serverless-http
 ```
 
 Créer un fichier *BookHandler.ts* dans le répertoire *handlers* et y mettre le contenu suivant :
-```typescrypt
+```typescript
 import { APIGatewayEvent, Context as LambdaContext, ProxyCallback } from 'aws-lambda';
 import * as serverlessHttp from 'serverless-http';
 import app from '../index';
@@ -51,7 +54,7 @@ export async function handler(event: APIGatewayEvent, context: LambdaContext, ca
 ## serverless.yml
 
 ### Créer le fichier serverless.yml à la racine du projet
-```yml
+```yaml
 service: xke-{TRIGRAMME}
 
 provider:
@@ -92,7 +95,7 @@ Il existe plusieurs écoles avec chacune ses avantages et inconvénients. À vou
  - déployer une lambda pour toute l'application
  
  
-```
+```yaml
 events:
       - http:
           path: /books
@@ -118,9 +121,9 @@ ex: *--stage jpi*
 
 
 ```
-serverless deploy --stage dev
+serverless deploy --stage jpi
 
-curl http://ENDPOINT_API_GATEWAY/{TRIGRAMME}dev/books
+curl http://ENDPOINT_API_GATEWAY/{TRIGRAMME}/books
 ```
 Résultat attendu
 ![Console output](serverless-deloy-output1.png "Console output")
@@ -155,11 +158,6 @@ custom:
 
 memorySize: ${self:custom.perEnv.memory}
 ```
-
-## Tracing
-
-** Activer xray**
-
 
 
 # Migration DynamoDB
@@ -268,7 +266,7 @@ export async function list(): Promise<Book[]> {
 ```
 
 ### Brancher le répository dans le controller
-
+Mofifier l'import
 
 ### Ajouter les droits à la lambda
 
@@ -289,10 +287,15 @@ provider:
 serverless offline
 curl http://localhost:3000/books
 
-serverless deploy --stage {TRIGRAMME}dev
+serverless deploy --stage {TRIGRAMME}
 
-curl http://ENDPOINT_API_GATEWAY/{TRIGRAMME}dev/books
+curl http://ENDPOINT_API_GATEWAY/{TRIGRAMME}/books
 ```
+
+### Insérer des données dans la table
+Aller dans [la console AWS](https://eu-west-1.console.aws.amazon.com/dynamodb/home?region=eu-west-1#tables:)
+
+![Ajouter un item](dynamodb-insert.png "Ajouter un item")
 
 # Tests d'intégration
 Le but va être de réutiliser les tests d'intégration déjà codés pour la partie Docker. 
@@ -382,4 +385,60 @@ Les tables sont créées à l'aide du SDK AWS avec une description JSON.
 ## Lancer les tests
 ```
 npm test
+```
+
+
+# Tracing
+
+## Installation du plugin
+```bash
+# Plugin serverless
+npm i -SD serverless-plugin-tracing
+
+# Pour instrumenter le SDK
+npm i -S aws-xray-sdk
+```
+
+**Fichier serverless.yml**
+```yaml
+plugins:
+  - serverless-plugin-tracing
+
+provider:
+tracing: true 
+```
+
+## Configurer le SDK AWS
+Remplacer *import * as AWS from "aws-sdk";* par
+
+**Fichier app/utils/awssdk.ts**
+```typescript
+import { APIVersions, ConfigurationOptions } from 'aws-sdk/lib/config';
+
+import config from './config';
+import logger from './logger.utils';
+
+
+let AWS;
+// If xray is enabled capture call from aws-sdk
+if (config.xray) {
+  const AWSXRay = require('aws-xray-sdk');
+  AWSXRay.setLogger(logger);
+  AWS = AWSXRay.captureAWS(require('aws-sdk'));
+  AWSXRay.captureHTTPsGlobal(require('http'));
+} else {
+  AWS = require('aws-sdk');
+}
+```
+
+## Ajouter les droits à la lambda
+**Fichier serverless.yml**
+```
+iamRoleStatements:
+  - Effect: Allow
+    Sid: tracing
+    Action:
+      - xray:PutTraceSegments
+      - xray:PutTelemetryRecords
+    Resource: "*"
 ```
