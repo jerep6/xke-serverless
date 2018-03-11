@@ -7,6 +7,7 @@ Votre responsabilité est de le faire fonctionner avec AWS Lambda
 ## Lancer l'application
 Faire tourner en local l'application
 ```
+npm install
 npm start
 
 curl http://localhost:3000/books
@@ -70,7 +71,7 @@ functions:
   books:
     handler: app/handlers/BookHandler.handler
     name: xke-serverless-books-${self:custom.stage}
-    memory: 128
+    memorySize: 128
     timeout: 10
     events:
       # TODO
@@ -88,7 +89,7 @@ Le routage s'effectue au sein de la lambda via Express, il est donc pas obligato
 Il existe plusieurs écoles avec chacune ses avantages et inconvénients. À vous de choisir la vôtre :
  - déployer une lambda par endpoint HTTP
  - déployer une lambda par ressource REST
- - déployer une lambda pour toute l'applicaiton
+ - déployer une lambda pour toute l'application
  
  
 ```
@@ -117,7 +118,7 @@ ex: *--stage jpi*
 
 
 ```
-serverless deploy --stage {TRIGRAMME}dev
+serverless deploy --stage dev
 
 curl http://ENDPOINT_API_GATEWAY/{TRIGRAMME}dev/books
 ```
@@ -137,10 +138,10 @@ Voyons comment lister les variables par environnement dans un fichier de configu
 
 **Fichier serverless-config.yml**
 ```
-jpi_dev:
+jpidev:
   memory: 128
 
-jpi_prod:
+jpiprod:
   memory: 512
 ```
 
@@ -195,11 +196,11 @@ npm install -S aws-sdk
 
 **Fichier utils/awssdk.ts**
 ```typescript
-import { APIVersions, ConfigurationOptions } from 'aws-sdk/lib/config';
+import {APIVersions, ConfigurationOptions} from "aws-sdk/lib/config";
 import * as AWS from "aws-sdk";
 
 
-const awsconf: ConfigurationOptions & APIVersions = {
+const conf: ConfigurationOptions & APIVersions = {
   region: "eu-west-1",
   apiVersions: {
     apigateway: '2015-07-09',
@@ -209,13 +210,9 @@ const awsconf: ConfigurationOptions & APIVersions = {
     s3: '2006-03-01'
   }
 };
-AWS.config.update(awsconf);
 
-const DynamoDB = new AWS.DynamoDB();
-const DocumentClient = new AWS.DynamoDB.DocumentClient();
+AWS.config.update(conf);
 
-export { DynamoDB };
-export { DocumentClient };
 export default AWS;
 ```
 
@@ -303,6 +300,7 @@ Ces tests attaquent la couche HTTP avec *supertest* et vont jusqu'à la base de 
 
 ## Installer DynamoDB local
 ```
+npm i -SD dynamodb-localhost
 npm run dynamodblocal:install
 ```
 
