@@ -195,11 +195,11 @@ npm install -S aws-sdk
 
 **Fichier utils/awssdk.ts**
 ```typescript
-import {APIVersions, ConfigurationOptions} from "aws-sdk/lib/config";
+import { APIVersions, ConfigurationOptions } from 'aws-sdk/lib/config';
 import * as AWS from "aws-sdk";
 
 
-const conf: ConfigurationOptions & APIVersions = {
+const awsconf: ConfigurationOptions & APIVersions = {
   region: "eu-west-1",
   apiVersions: {
     apigateway: '2015-07-09',
@@ -209,9 +209,13 @@ const conf: ConfigurationOptions & APIVersions = {
     s3: '2006-03-01'
   }
 };
+AWS.config.update(awsconf);
 
-AWS.config.update(conf);
+const DynamoDB = new AWS.DynamoDB();
+const DocumentClient = new AWS.DynamoDB.DocumentClient();
 
+export { DynamoDB };
+export { DocumentClient };
 export default AWS;
 ```
 
@@ -230,43 +234,40 @@ functions:
 
 ### Coder le répository
 ```typescript
-import AWS from '../utils/awssdk'
+import { DocumentClient as Dynamo} from '../utils/awssdk'
 import config from '../utils/config'
-import logger, { errorToString} from '../utils/logger.utils';
+import logger, { errorToString } from '../utils/logger.utils';
 import { Book } from '../../typings/Book';
 import { DocumentClient } from 'aws-sdk/lib/dynamodb/document_client';
-
-const documentClient = new AWS.DynamoDB.DocumentClient();
 
 
 export async function get(bookId: string): Promise<Book> {
   try {
-    const result: DocumentClient.GetItemOutput = await documentClient.get({
+    const result: DocumentClient.GetItemOutput = await Dynamo.get({
       TableName: config.dynamodb.book,
-      Key: {id: bookId}
+      Key: { id: bookId }
     }).promise();
 
     return <Book> result.Item;
 
-  } catch(error) {
-    logger.error(`BookRepository.get - Error reading book ${bookId}`, {error: errorToString(error)});
+  } catch (error) {
+    logger.error(`BookRepository.get - Error reading book ${bookId}`, { error: errorToString(error) });
     throw error;
   }
 }
 
 export async function list(): Promise<Book[]> {
   try {
-    const result = await documentClient.scan({
+    const result = await Dynamo.scan({
       TableName: config.dynamodb.book
     }).promise();
 
     return <Book[]> result.Items;
-  } catch(error) {
-    logger.error(`BookRepository.get - Error listing books`, {error: errorToString(error)});
+  } catch (error) {
+    logger.error(`BookRepository.get - Error listing books`, { error: errorToString(error) });
     throw error;
   }
 }
-
 ```
 
 ### Brancher le répository dans le controller
@@ -294,4 +295,93 @@ curl http://localhost:3000/books
 serverless deploy --stage {TRIGRAMME}dev
 
 curl http://ENDPOINT_API_GATEWAY/{TRIGRAMME}dev/books
+```
+
+# Tests d'intégration
+Le but va être de réutiliser les tests d'intégration déjà codés pour la partie Docker. 
+Ces tests attaquent la couche HTTP avec *supertest* et vont jusqu'à la base de donnée.
+
+## Installer DynamoDB local
+```
+npm run dynamodblocal:install
+```
+
+## Configurer les SDK AWS pour pointer sur la base locale
+
+**Fichier utils/awssdk.ts**
+Remplacer
+```javascript
+const DynamoDB = new AWS.DynamoDB();
+const DocumentClient = new AWS.DynamoDB.DocumentClient();
+```
+par
+```javascript
+let DocumentClient, DynamoDB;
+if (process.env.NODE_ENV === 'test') {
+  const configDynamo = {
+    region: "eu-west-1",
+    endpoint: "http://localhost:8888",
+    accessKeyId: 'dummy',
+    secretAccessKey: 'dummy'
+  };
+
+  DynamoDB = new AWS.DynamoDB(configDynamo);
+  DocumentClient = new AWS.DynamoDB.DocumentClient(configDynamo);
+}
+else {
+  DynamoDB = new AWS.DynamoDB();
+  DocumentClient = new AWS.DynamoDB.DocumentClient();
+}
+```
+
+## Alimentation des tables
+**Fichier tests/books.test.js**
+```javascript
+// Importer les functions du fichier tests.utils.js
+import { afterAllHook, beforeAllHook, afterEachHook, populateDatabase } from './tests.utils'
+
+// [...]
+
+// Dans le describe brancher les hooks
+beforeAll(beforeAllHook, 10000);
+afterAll(afterAllHook);
+afterEach(afterEachHook);
+
+// [...]
+
+// Au début du tests ajouter cette ligne
+await populateDatabase('./data/books-01.json');
+
+//
+```
+
+## Création des tables
+Les tables sont créées à l'aide du SDK AWS avec une description JSON.
+
+**Fichier tests/tables/books.table.json**
+```json
+{
+  "TableName": "books",
+  "AttributeDefinitions": [
+    {
+      "AttributeName": "id",
+      "AttributeType": "S"
+    }
+  ],
+  "KeySchema": [{
+      "AttributeName": "id",
+      "KeyType": "HASH"
+    }
+  ],
+  "ProvisionedThroughput": {
+    "ReadCapacityUnits": 1,
+    "WriteCapacityUnits": 1
+  }
+}
+```
+/!\ Cela fait une double définition entre le fichier serverless.yml et les tests. Vos idées sont les bienvenues :)
+
+## Lancer les tests
+```
+npm test
 ```
