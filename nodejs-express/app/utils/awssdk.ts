@@ -1,5 +1,4 @@
 import { APIVersions, ConfigurationOptions } from 'aws-sdk/lib/config';
-import { ServiceConfigurationOptions } from 'aws-sdk/lib/service';
 import * as AWS from "aws-sdk";
 
 
