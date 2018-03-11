@@ -3,6 +3,13 @@
   "version": "1.0.0",
   "main": "index.js",
   "license": "MIT",
+  "scripts": {
+    "start": "nodemon --exec ts-node app/server.ts",
+    "start:production": "node build/app/server.js",
+    "build": "rm -rf ./build && tsc",
+    "test": "NODE_ENV=test jest",
+    "dynamodblocal:install": "node tests/scripts/dynamodblocal-install.js"
+  },
   "dependencies": {
     "@types/express": "4.11.1",
     "@types/morgan": "^1.7.35",
@@ -16,15 +23,31 @@
   },
   "devDependencies": {
     "@types/aws-lambda": "0.0.31",
+    "@types/jest": "^22.2.0",
     "@types/winston": "2.3.7",
+    "glob": "^7.1.2",
+    "jest": "^22.4.2",
     "nodemon": "1.14.12",
     "serverless": "1.25.0",
+    "supertest": "^3.0.0",
+    "ts-jest": "^22.4.1",
     "ts-node": "4.1.0",
     "typescript": "^2.7.2"
   },
-  "scripts": {
-    "start": "nodemon --exec ts-node app/server.ts",
-    "start:production": "node build/app/server.js",
-    "build": "rm -rf ./build && tsc"
+  "jest": {
+    "globals": {
+      "__TS_CONFIG__": "tsconfig.json"
+    },
+    "moduleFileExtensions": [
+      "ts",
+      "js"
+    ],
+    "transform": {
+      "^.+\\.(ts|tsx)$": "./node_modules/ts-jest/preprocessor.js"
+    },
+    "testMatch": [
+      "**/tests/**/*.test.(ts|js)"
+    ],
+    "testEnvironment": "node"
   }
 }

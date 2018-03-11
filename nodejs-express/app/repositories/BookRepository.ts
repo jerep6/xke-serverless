@@ -18,6 +18,7 @@ const books = [
   {
     id: "ccc",
     title: "Da Vinci Code",
+    description: "Description Da Vinci Code",
     author_id: "2",
     year: 2003,
     likes: 130000,
