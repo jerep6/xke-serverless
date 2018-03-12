@@ -36,9 +36,6 @@ API Gateway](https://docs.aws.amazon.com/apigateway/latest/developerguide/set-up
 
 [La librairie serverless-http](https://www.npmjs.com/package/serverless-http) fait ce travail pour nous.
 
-```
-npm install -S serverless-http
-```
 
 Créer un fichier *BookHandler.ts* dans le répertoire *handlers* et y mettre le contenu suivant :
 ```typescript
@@ -60,7 +57,7 @@ service: xke-{TRIGRAMME}
 provider:
   name: aws
   runtime: nodejs6.10
-  region: eu-west-1
+  region: eu-west-2
   endpointType: regional
 
 plugins:
@@ -171,10 +168,6 @@ resources:
 ## Utilisation de la table
 ### Ajouter le SDK AWS dans le code
 
-```
-npm install -S aws-sdk
-```
-
 **Fichier utils/awssdk.ts**
 ```typescript
 import {APIVersions, ConfigurationOptions} from "aws-sdk/lib/config";
@@ -182,7 +175,7 @@ import * as AWS from "aws-sdk";
 
 
 const conf: ConfigurationOptions & APIVersions = {
-  region: "eu-west-1",
+  region: "eu-west-2",
   apiVersions: {
     apigateway: '2015-07-09',
     cloudwatch: '2010-08-01',
@@ -193,6 +186,12 @@ const conf: ConfigurationOptions & APIVersions = {
 };
 
 AWS.config.update(conf);
+
+const DynamoDB = new AWS.DynamoDB();
+const DocumentClient = new AWS.DynamoDB.DocumentClient();
+
+export {DynamoDB};
+export {DocumentClient};
 
 export default AWS;
 ```
@@ -249,7 +248,7 @@ export async function list(): Promise<Book[]> {
 ```
 
 ### Brancher le répository dans le controller
-Mofifier l'import
+Modifier l'import
 
 ### Ajouter les droits à la lambda
 
@@ -276,7 +275,7 @@ curl http://ENDPOINT_API_GATEWAY/{TRIGRAMME}/books
 ```
 
 ### Insérer des données dans la table
-Aller dans [la console AWS](https://eu-west-1.console.aws.amazon.com/dynamodb/home?region=eu-west-1#tables:)
+Aller dans [la console AWS](https://eu-west-2.console.aws.amazon.com/dynamodb/home?region=eu-west-2#tables:)
 
 ![Ajouter un item](dynamodb-insert.png "Ajouter un item")
 
@@ -303,7 +302,7 @@ par
 let DocumentClient, DynamoDB;
 if (process.env.NODE_ENV === 'test') {
   const configDynamo = {
-    region: "eu-west-1",
+    region: "eu-west-2",
     endpoint: "http://localhost:8888",
     accessKeyId: 'dummy',
     secretAccessKey: 'dummy'
