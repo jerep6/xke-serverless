@@ -67,17 +67,11 @@ plugins:
 # TODO
   
 custom:
-  stage: ${opt:stage, self:provider.stage, env:USER}
+# TODO
 
 functions:
+# TODO
 
-  books:
-    handler: app/handlers/BookHandler.handler
-    name: xke-serverless-books-${self:custom.stage}
-    memorySize: 128
-    timeout: 10
-    events:
-      # TODO
 ```
 
 
@@ -93,17 +87,6 @@ Il existe plusieurs écoles avec chacune ses avantages et inconvénients. À vou
  - déployer une lambda par endpoint HTTP
  - déployer une lambda par ressource REST
  - déployer une lambda pour toute l'application
- 
- 
-```yaml
-events:
-      - http:
-          path: /books
-          method: ANY
-      - http:
-          path: /books/{any+}
-          method: ANY
-```
  
  
 ## Premier déploiement
