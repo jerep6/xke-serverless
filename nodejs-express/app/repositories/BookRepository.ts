@@ -1,4 +1,5 @@
 import { Book } from '../../typings/Book';
+import * as uuid from 'uuid/v4';
 
 const books = [
   {
@@ -63,6 +64,12 @@ export async function list (): Promise<Book[]> {
   return books;
 };
 
-export async function get(bookId): Promise<Book> {
+export async function get(bookId: string): Promise<Book> {
   return books.filter(elt => elt.id == bookId)[0];
+};
+
+export async function create(book: Book): Promise<Book> {
+  const bookToCreate = {...{id: uuid() }, ...book};
+  books.push(bookToCreate);
+  return bookToCreate;
 };

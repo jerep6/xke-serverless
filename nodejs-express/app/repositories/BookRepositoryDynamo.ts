@@ -1,8 +1,9 @@
-import { DocumentClient as Dynamo} from '../utils/awssdk'
+import { DocumentClient as Dynamo } from '../utils/awssdk'
 import config from '../utils/config'
 import logger, { errorToString } from '../utils/logger.utils';
 import { Book } from '../../typings/Book';
 import { DocumentClient } from 'aws-sdk/lib/dynamodb/document_client';
+import * as uuid from 'uuid/v4';
 
 
 export async function get(bookId: string): Promise<Book> {
@@ -33,3 +34,19 @@ export async function list(): Promise<Book[]> {
   }
 }
 
+
+export async function create(book: Book): Promise<Book> {
+  const bookToCreate = {...{id: uuid() }, ...book};
+  const params: DocumentClient.PutItemInput = {
+    TableName: config.dynamodb.book,
+    Item: bookToCreate
+  };
+
+  try {
+    await Dynamo.get().promise();
+    return bookToCreate;
+  } catch (error) {
+    logger.error(`BookRepository.create - Error creating book`, { params: JSON.stringify(params), error: errorToString(error) });
+    throw error;
+  }
+}

@@ -44,10 +44,10 @@ functions:
       XRAY: true
     events:
       - http:
-          path: /books
+          path: /
           method: ANY
       - http:
-          path: /books/{any+}
+          path: /{any+}
           method: ANY
 
 
