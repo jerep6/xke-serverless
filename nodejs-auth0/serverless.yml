@@ -1,0 +1,33 @@
+service: xke-serverless-nodejs-auth0
+
+provider:
+  name: aws
+  runtime: nodejs6.10
+  region: eu-west-1
+  endpointType: regional
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-offline # Run local API gateway
+
+
+custom:
+  stage: ${opt:stage, self:provider.stage, env:USER}
+  region: ${opt:region, self:provider.region}
+
+functions:
+  books:
+    handler: app/handlers/LambdaHandler.handler
+    name: ${self:custom.stage}-xke-serverless-books
+    memorySize: 128
+    timeout: 10
+    environment:
+      TABLE_BOOK: ${self:custom.stage}-book
+      XRAY: true
+    events:
+      - http:
+          path: /
+          method: ANY
+      - http:
+          path: /{any+}
+          method: ANY

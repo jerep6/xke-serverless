@@ -1,0 +1,27 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "target": "es2015",
+    "lib": [
+      "es2017",
+      "esnext.asynciterable"
+    ],
+    "outDir": "build",
+    "declaration": false,
+    "noImplicitAny": false,
+    "inlineSourceMap": true,
+    "removeComments": true,
+    "strictNullChecks": true,
+    "typeRoots" : ["typings", "node_modules/@types"]
+  },
+  "include": [
+    "app/**/*",
+    "typings/**/*"
+  ],
+  "exclude": [
+    ".idea",
+    ".serverless",
+    ".git",
+    "node_modules"
+  ]
+}
