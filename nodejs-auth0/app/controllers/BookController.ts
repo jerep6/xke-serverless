@@ -4,15 +4,20 @@ import {Request, Response, NextFunction} from 'express';
 import * as repo from '../repositories/BookRepository'
 import logger from '../utils/logger.utils';
 import { Book } from '../../typings/Book';
+const guard = require('express-jwt-permissions')({
+  requestProperty: 'user',
+  permissionsProperty: 'http://mynamespace/roles'
+});
+
 
 const router = express.Router();
-router.get('/', list);
+router.get('/', guard.check('ADMIN'), list);
 router.get('/:bookId', get);
 router.post('/', create);
 export default router;
 
 async function list(req: Request, res: Response, next: NextFunction) {
-  logger.debug('list books');
+  logger.debug('list books', JSON.stringify(req.user));
 
   try {
     const books: Book[] = await repo.list();
