@@ -1,0 +1,49 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: |
+  Lambda to test canary release
+
+# More info about Globals: https://github.com/awslabs/serverless-application-model/blob/master/docs/globals.rst
+Globals:
+  Function:
+    Timeout: 3
+
+
+Resources:
+  BooksAPI:
+    Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
+    Properties:
+      CodeUri: ./
+      Handler: app/handlers/BookHandler.handler
+      FunctionName: canary-books
+      Runtime: nodejs8.10
+      Environment:
+        Variables:
+          PARAM1: VALUE
+      Events:
+        Root:
+          Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
+          Properties:
+            Path: /
+            Method: get
+        Proxy:
+          Type: Api
+          Properties:
+            Path: /{any+}
+            Method: ANY
+      AutoPublishAlias: live
+#      DeploymentPreference:
+#        Type: Canary10Percent5Minutes
+
+Outputs:
+  BooksAPI:
+    Description: "API Gateway endpoint URL for Prod stage for Hello World function"
+    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
+
+  BooksAPILambdaArn:
+    Description: "API Lambda Function ARN"
+    Value: !GetAtt BooksAPI.Arn
+
+  BooksAPIIamRoleArn:
+    Description: "Implicit IAM Role created for lambda function"
+    Value: !GetAtt BooksAPIRole.Arn
