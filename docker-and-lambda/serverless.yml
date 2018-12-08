@@ -1,0 +1,30 @@
+service: books-api
+
+provider:
+  stackName: ${self:custom.stage}-${self:service}
+  name: aws
+  runtime: nodejs8.10
+  region: eu-west-1
+  endpointType: REGIONAL
+
+plugins:
+  - serverless-plugin-typescript
+  - serverless-offline
+
+custom:
+  stage: ${opt:stage, self:provider.stage, env:USER}
+
+functions:
+
+  books:
+    handler: app/handlers/BookHandler.handler
+    name: ${self:custom.stage}-books-api
+    events:
+      - http:
+          path: /
+          method: GET
+          cors: true
+      - http:
+          path: /{any+}
+          method: ANY
+          cors: true
