@@ -9,13 +9,34 @@ Globals:
     Timeout: 3
 
 
+Parameters:
+  Environment:
+    Type: String
+    Default: "dev"
+
+
+Conditions:
+  isProd: !Equals [ !Ref Environment, prod ]
+
 Resources:
+  ApiGatewayApi:
+    Type: AWS::Serverless::Api
+    Properties:
+      EndpointConfiguration: REGIONAL
+#      Cors:
+#        AllowOrigin: "*"
+      StageName:
+        Fn::If:
+          - isProd
+          - Ref: AWS::NoValue
+          - Ref: Environment
+
   BooksAPI:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       CodeUri: ./
-      Handler: app/handlers/BookHandler.handler
-      FunctionName: canary-books
+      Handler: build/handlers/BookHandler.handler
+      FunctionName: !Sub "${Environment}-books-api"
       Runtime: nodejs8.10
       Environment:
         Variables:
@@ -24,21 +45,27 @@ Resources:
         Root:
           Type: Api # More info about API Event Source: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#api
           Properties:
+            RestApiId: !Ref ApiGatewayApi
             Path: /
-            Method: get
+            Method: ANY
         Proxy:
           Type: Api
           Properties:
+            RestApiId: !Ref ApiGatewayApi
             Path: /{any+}
             Method: ANY
       AutoPublishAlias: live
-#      DeploymentPreference:
-#        Type: Canary10Percent5Minutes
 
 Outputs:
   BooksAPI:
     Description: "API Gateway endpoint URL for Prod stage for Hello World function"
-    Value: !Sub "https://${ServerlessRestApi}.execute-api.${AWS::Region}.amazonaws.com/Prod/hello/"
+    Value: !Sub
+      - "https://${ApiGatewayApi}.execute-api.${AWS::Region}.amazonaws.com/${StageName}"
+      -
+        StageName: !If
+            - isProd
+            - !Ref "AWS::NoValue"
+            - !Sub "${Environment}/"
 
   BooksAPILambdaArn:
     Description: "API Lambda Function ARN"

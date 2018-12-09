@@ -1,8 +1,13 @@
-# Requirements
+# Purpose
+Build an application which runs either in AWS Lambda or in AWS Fargate (or ECS) without code modification.
+
+
+## Setup process
+
+### Requirements
 * [NodeJS 8.10+ installed](https://nodejs.org/en/download/)
 * [Docker installed](https://www.docker.com/community-edition)
 
-## Setup process
 ## Installing dependencies
 ```bash
 npm install
@@ -15,20 +20,24 @@ npm start
 
 
 # Deployment
-The application runs in local either with *Docker* or with *AWS Lambda* 
 
 ## Docker
 ### Docker build
 ```bash
 npm run-script docker:build
+npm run-script docker:run-local
 ```
 
-### Docker run
+
+## Lambda (SAM)
 ```bash
-npm run-script docker:run
+AWS_PROFILE=<profile> aws s3 mb <bucket_to_store_artifact>
+AWS_PROFILE=<profile> BUCKET_ARTIFACT=<bucket_to_store_artifact> npm run-script sam:package
+AWS_PROFILE=<profile> npm run-script sam:deploy
 ```
 
-## Lambda
+
+## Lambda (serverless)
 ```bash
 AWS_PROFILE=<profile> npm run-script lambda:deploy
 ```
