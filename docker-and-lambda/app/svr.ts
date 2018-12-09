@@ -1,5 +1,5 @@
 import app from './index'
-import logger from '../../nodejs-express/app/utils/logger.utils';
+import logger from './utils/logger.utils';
 import * as http from "http";
 
 const port = 3000;
