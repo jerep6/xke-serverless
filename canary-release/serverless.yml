@@ -1,0 +1,41 @@
+service: canary-release
+
+provider:
+  name: aws
+  runtime: nodejs8.10
+  region: eu-west-1
+  endpointType: REGIONAL
+
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - codedeploy:*
+      Resource:
+        - "*"
+
+plugins:
+  # Run local API gateway
+  - serverless-plugin-typescript
+  - serverless-offline
+  - serverless-plugin-canary-deployments
+
+custom:
+  stage: ${opt:stage, self:provider.stage, env:USER}
+
+functions:
+
+  books:
+    handler: app/handlers/BookHandler.handler
+    name: xke-serverless-books-${self:custom.stage}
+    events:
+      - http:
+          path: /
+          method: GET
+          cors: true
+      - http:
+          path: /{any+}
+          method: ANY
+          cors: true
+    deploymentSettings:
+      type: Canary10Percent5Minutes
+      alias: Live

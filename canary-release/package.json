@@ -1,0 +1,32 @@
+{
+  "name": "xke-serverless-api",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node app/svr.ts",
+    "test": "npm test"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/aws-lambda": "0.0.31",
+    "@types/koa": "^2.0.44",
+    "@types/koa-router": "^7.0.27",
+    "@types/winston": "^2.3.7",
+    "serverless": "^1.25.0",
+    "serverless-offline": "^3.16.0",
+    "serverless-plugin-canary-deployments": "^0.4.3",
+    "serverless-plugin-typescript": "^1.1.5",
+    "ts-node": "^4.1.0",
+    "typescript": "^2.7.1"
+  },
+  "dependencies": {
+    "@koa/cors": "^2.2.1",
+    "koa": "^2.4.1",
+    "koa-bodyparser": "^4.2.0",
+    "koa-router": "^7.4.0",
+    "serverless-http": "^1.5.3",
+    "winston": "^2.4.0"
+  }
+}
