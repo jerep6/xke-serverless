@@ -23,8 +23,8 @@ Resources:
     Type: AWS::Serverless::Api
     Properties:
       EndpointConfiguration: REGIONAL
-#      Cors:
-#        AllowOrigin: "*"
+      Cors:
+        AllowOrigin: "'*'"
       StageName:
         Fn::If:
           - isProd
@@ -35,7 +35,7 @@ Resources:
     Type: AWS::Serverless::Function # More info about Function Resource: https://github.com/awslabs/serverless-application-model/blob/master/versions/2016-10-31.md#awsserverlessfunction
     Properties:
       CodeUri: ./
-      Handler: build/handlers/BookHandler.handler
+      Handler: build/LambdaHandler.handler
       FunctionName: !Sub "${Environment}-books-api"
       Runtime: nodejs8.10
       Environment:
