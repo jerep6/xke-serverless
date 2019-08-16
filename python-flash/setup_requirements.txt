@@ -1,0 +1,1 @@
+lambda-setuptools==0.3.0
