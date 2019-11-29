@@ -16,7 +16,7 @@
         <commons-lang3.version>3.7</commons-lang3.version>
         <snakeyaml.version>1.19</snakeyaml.version>
         <junit.version>4.12</junit.version>
-        <jetty.version>9.4.6.v20170531</jetty.version>
+        <jetty.version>9.4.24.v20191120</jetty.version>
         <assertj.version>3.9.1</assertj.version>
         <rest-assured.version>3.0.3</rest-assured.version>
         <maven-surefire-plugin.version>2.20</maven-surefire-plugin.version>
